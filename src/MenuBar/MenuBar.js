@@ -3,6 +3,8 @@ import "./MenuBar.css";
 import BaseStyles from "../StyleMain";
 import { useEffect } from "react";
 import Loader from "../Components/Loader";
+const genericimage = require('./fruit.png')
+
 
 const Paths = [
   {
@@ -21,6 +23,12 @@ const Paths = [
     name: "Sell",
     path: "/list",
     type: "important",
+    association: "nav",
+  },
+  {
+    name: "Something Else",
+    path: "/else",
+    type: "normal",
     association: "nav",
   },
   {
@@ -53,25 +61,81 @@ const MenuSubBrowse = ({ proptest }) => {
     </>
   );
 };
-const MenuShowCase = () => {
+const MenuShowCase = ({ everShown }) => {
+  const [hasShown, sethasShown] = useState(false);
+  const [isLoading, setisLoading] = useState(true);
+
+  useEffect(() => {
+    if (everShown && !hasShown) {
+      console.log("goinnnng");
+      setTimeout(() => {
+        sethasShown(true);
+        load_content();
+      }, 300);
+      //The timeout is for demonstration purposes
+    }
+  }, [everShown]);
+
+  const load_content = () => {
+    setisLoading(false);
+  };
+
+
+
+  const Cell = ({title="Undefined", desc="Undefined", cat="",price=null, img=genericimage}) => { 
+    return (<>
+        <div className="ResultsCellSubMenu">
+          <div className="ResultsCellSubMenuTitle">
+            {title} 
+          </div>
+
+          <div className="ResultsCellSubMenuDesc">
+            {desc}
+          </div>
+
+          <img className="ResultsCellSubMenuImg" src={genericimage}>
+        
+          </img>
+        </div>
+
+
+
+
+    </>)
+  }
+  const LoadedContent = () => {
+    return (
+      <ul className="submenudynamiccontent">
+        {Array.from(Array(4).keys()).map((n, i) => (
+          // <li className="DynamicShowCaseCell" key={i}>te33st</li>
+
+          <li key={i}>
+            <Cell/>
+          </li>
+        ))}
+      </ul>
+    );
+  };
   return (
-    <>
-      ShowCase
-      {Array.from(Array(4).keys()).map((n, i) => (
-        <h1 key={i}>test</h1>
-      ))}
-    </>
+
+    <div className="ShowCaseMenuSub">
+      <>{isLoading ? <Loader /> :
+      <>
+      <div className="SubMenuTitle">Check These Out</div>
+       <LoadedContent />
+        </>}</>
+    </div>
   );
 };
-
-const subMenus = {
-  "Browse Listings": <MenuSubBrowse />,
-  ShowCase: <MenuShowCase />,
-};
-
 const DummyComponent = ({ text }) => {
   return <>I am a placeholder component from {text}</>;
 };
+const subMenus = {
+  "Browse Listings": MenuSubBrowse,
+  "ShowCase": MenuShowCase,
+  "Something Else": DummyComponent,
+};
+
 const Logo = ({ variant }) => {
   return (
     <>
@@ -81,6 +145,8 @@ const Logo = ({ variant }) => {
 };
 
 const MenuSubMenuBig = ({ titletext, role, show, component }) => {
+  const Widget = component;
+
   return (
     <>
       <div
@@ -93,17 +159,18 @@ const MenuSubMenuBig = ({ titletext, role, show, component }) => {
           borderRadius: "0px 12px 12px 12px",
           marginTop: "10px",
           marginLeft: "-11px",
-          marginRight: "10px",
+          // marginRight: "10px",
           border: "1px solid black",
-          //   boxShadow: "1px 1px 1px black",
+
+          // width: 'automatic'
+          boxShadow: "1px 1px 1px black",
         }}
       >
-        {component}
+        <Widget text="test" everShown={show} />
       </div>
     </>
   );
 };
-
 
 const MenuButton = ({ variant = "normal", text, hovercomponent = null }) => {
   const [isHovering, setIsHovering] = useState(false);
